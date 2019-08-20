@@ -1,8 +1,9 @@
 ﻿#include "stdafx.h"
 using namespace std;
+using ustring = basic_string<unsigned char>;
 string APName = "scut-student";
 HANDLE hClient = nullptr;
-DWORD dwMaxClient = 2;         
+DWORD dwMaxClient = 2;
 DWORD dwCurVersion = 0;
 DWORD dwResult = 0;
 DWORD dwRetVal = 0;
@@ -39,14 +40,21 @@ void onError(const int lineNum = 0, int code = 0, const string& errInfo = "") {
 	FREE();
 	exit(-1);
 }
-
+void _DebugReport(const string & str) {
+#ifdef _DEBUG
+	cout << "[DEBUG]" << str << endl;
+#endif
+	return;
+}
 bool _APIChecker(DWORD Res) {
 	return Res == ERROR_SUCCESS || GetLastError() == ERROR_SUCCESS;
 }
 function<bool(DWORD)> APIChecker = _APIChecker;
 template <typename Result, typename ...Args>
 Result APICaller(const function<bool(Result)>& checker, Result lastCode, Result(__stdcall *fn)(const Args...), Args... args) {
-	return checker(lastCode) ? fn(forward<Args>(args)...) : (onError(GetLastError()), -1);
+	Result res = fn(forward<Args>(args)...);
+	if (!checker(lastCode) || !checker(res)) onError(GetLastError(), -1);
+	return res;
 }
 void init() {
 	dwResult = APICaller(APIChecker, (DWORD)ERROR_SUCCESS, WlanOpenHandle, dwMaxClient, (PVOID)NULL, &dwCurVersion, &hClient);
@@ -75,7 +83,8 @@ int findAP() {
 		if (pBssEntry->dot11Ssid.uSSIDLength == 0)continue;
 		string _name_buffer;
 		for (k = 0; k < pBssEntry->dot11Ssid.uSSIDLength; ++k)
-			_name_buffer += (int)pBssEntry->dot11Ssid.ucSSID;
+			_name_buffer += (int)pBssEntry->dot11Ssid.ucSSID[k];
+		_DebugReport(_name_buffer);
 		if (_name_buffer == APName)
 			found = true;
 		if (found && !(pBssEntry->bNetworkConnectable)) {
@@ -92,7 +101,7 @@ int findAP() {
 			return 0;
 		}
 	}
-	if(!found){
+	if (!found) {
 		string tmpstr = "兄啊，我这找不到你要的热点" + APName + "啊";
 		onError(__LINE__, -3, tmpstr);
 	}
@@ -165,15 +174,17 @@ void _Connect_WIFI() {
 	else if (pIfInfo->isState == wlan_interface_state_connected) {
 		int res =
 			MessageBoxW(nullptr, L"兄啊你都连接到无线网上了，要我帮你切换🐎？", L"不懂就问", MB_YESNO | MB_ICONQUESTION);
-		if (res == IDYES)
+		if (res == IDYES) {
 			APICaller(APIChecker, (DWORD)ERROR_SUCCESS, WlanDisconnect, hClient, const_cast<const GUID*>(&pIfInfo->InterfaceGuid), (PVOID)NULL);
+
+		}
 		else return;
 	}
-	if(findAP() == 0){
+	if (findAP() == 0) {
 		dwResult = APICaller(APIChecker, (DWORD)ERROR_SUCCESS, WlanConnect, hClient,
 			const_cast<const GUID*>(&pIfInfo->InterfaceGuid), &scut_student, (PVOID)NULL);
 	}
-		
+
 }
 __declspec(dllexport) void __stdcall Connect(const char* SSID) {
 	APName = SSID;
