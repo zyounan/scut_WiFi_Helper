@@ -14,7 +14,7 @@
 
 ##	V0.3.0 Update:
 *	可以自动连接*scut-student*热点了
->	说明：仓库中添加的动态链接库是用来自动连接WiFi的；这些代码参考了MSDN的Native Wifi API样例，~~由于时间匆忙，写的也比较乱orz~~由于x86和x64的DLL不是兼容的，因此你可能在32位机子上需要把脚本中的"x64"改成"x86".仓库中附带了两份编译好的DLL，当然你也可以自己编译.  
+>	说明：仓库中添加的动态链接库是用来自动连接WiFi的；这些代码参考了MSDN的[Native Wifi API](https://docs.microsoft.com/en-us/windows/win32/api/wlanapi/nf-wlanapi-wlangetavailablenetworklist)样例，~~由于时间匆忙，写的也比较乱orz~~由于x86和x64的DLL不是兼容的，因此你可能在32位机子上需要把脚本中的"x64"改成"x86".仓库中附带了两份编译好的DLL，当然你也可以自己编译.  
 
 ##	V0.2.1 Update:
 ~~*	忽略认证页面的证书~~  
