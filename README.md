@@ -2,15 +2,30 @@
 ## 华南理工大学</br>宿舍WiFi连接助手
 
 ##	使用说明
-**确保你安装了Python 3和pip，你正在使用Windows系统**  
 
-命令行下运行
+命令行：
+*	Python 3
+*	Python 3 包：pywin32和requests
+可以运行这个来确定是否已经安装：
 >	pip install pywin32 requests  
+
+有界面：  
+*	**.Net Framework 4.6**  
+*	**Windows 10 1709或更高**  
+
 
 然后就可以用啦！
 
+
+
 ##	V0.3.1 Update:  
 *	重构ConnectWiFi模块.  
+####	2019/11/3 Update:  
+*	**（新增：针对Win10的C#版本）**	使用右下角的Toast Notification作为UI.（需要Win10 1709或更高）
+	![](success.png)
+*	注意：使用ConnectWiFi_for_win10时，请在项目引用中引入
+	```Windows.Foundation.UniversalApiContract```以启用```Windows.UI```和```Windows.Data```
+
 
 ##	V0.3.0 Update:
 *	可以自动连接*scut-student*热点了
